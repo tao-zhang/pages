@@ -1,0 +1,27 @@
+name: Uptime Check
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check production URL
+        env:
+          URL: ${{ vars.PRODUCTION_URL }}
+        run: |
+          if [ -z "$URL" ]; then
+            echo "PRODUCTION_URL repo variable is not set — see monitoring/README.md" >&2
+            exit 1
+          fi
+
+          status=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$URL" || echo "000")
+          echo "GET $URL -> $status"
+
+          if [ "$status" -lt 200 ] || [ "$status" -ge 400 ]; then
+            echo "Site check failed with status $status" >&2
+            exit 1
+          fi

@@ -1,0 +1,29 @@
+---
+title: "Welcome to the Blog"
+date: "2026-08-01"
+description: "This is a sample post that shows the frontmatter and MDX conventions the content team should follow."
+tags: ["meta"]
+author: "Founding Engineer"
+---
+
+This is a **sample post** — replace it (and the other seed posts in `content/posts/`) with real content.
+
+## Frontmatter
+
+Every post needs:
+
+- `title` — used as the page `<h1>` and `<title>` tag
+- `date` — ISO format (`YYYY-MM-DD`), drives sort order and the sitemap
+- `description` — used for the meta description and Open Graph/Twitter cards
+- `tags` — an array of strings, shown on the post and usable for future tag pages
+
+Optional fields: `author`, `image` (absolute URL, used for social sharing), `draft` (set `true` to hide from production builds while still previewing locally).
+
+## Writing
+
+Standard Markdown works, plus GitHub-flavored tables, strikethrough, and task lists via `remark-gfm`. You can also drop in React components if a post ever needs one — that's what the MDX part of MDX buys us over plain Markdown.
+
+```js
+// code blocks work too
+console.log("hello, SEO");
+```
