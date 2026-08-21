@@ -1,0 +1,51 @@
+name: Deploy
+
+# Deploy-on-publish: every push to main (i.e. every merged post) rebuilds
+# the static export and republishes it. Requires GitHub Pages to be enabled
+# on the repo with Source = "GitHub Actions" (Settings > Pages) — see
+# docs/publishing.md for the one-time setup.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy at a time; never cancel one that's already publishing.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_GA_ID: ${{ vars.NEXT_PUBLIC_GA_ID }}
+          NEXT_PUBLIC_GSC_VERIFICATION: ${{ vars.NEXT_PUBLIC_GSC_VERIFICATION }}
+          NEXT_PUBLIC_TWITTER_HANDLE: ${{ vars.NEXT_PUBLIC_TWITTER_HANDLE }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
