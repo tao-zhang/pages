@@ -30,9 +30,32 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # No custom domain yet: derive the live GitHub Pages URL (and the
+      # basePath Next.js needs for a project-site subpath) from the repo
+      # itself, so this keeps working unmodified once a real domain is set
+      # as the NEXT_PUBLIC_SITE_URL repo variable (basePath becomes "").
+      - name: Determine site URL and base path
+        run: |
+          if [ -n "${{ vars.NEXT_PUBLIC_SITE_URL }}" ]; then
+            echo "SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}" >> "$GITHUB_ENV"
+            echo "BASE_PATH=${{ vars.NEXT_PUBLIC_BASE_PATH }}" >> "$GITHUB_ENV"
+          else
+            OWNER="${{ github.repository_owner }}"
+            REPO="${{ github.event.repository.name }}"
+            OWNER_LC=$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')
+            REPO_LC=$(echo "$REPO" | tr '[:upper:]' '[:lower:]')
+            if [ "$REPO_LC" = "$OWNER_LC.github.io" ]; then
+              echo "SITE_URL=https://$OWNER_LC.github.io" >> "$GITHUB_ENV"
+              echo "BASE_PATH=" >> "$GITHUB_ENV"
+            else
+              echo "SITE_URL=https://$OWNER_LC.github.io/$REPO" >> "$GITHUB_ENV"
+              echo "BASE_PATH=/$REPO" >> "$GITHUB_ENV"
+            fi
+          fi
       - run: npm run build
         env:
-          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ env.SITE_URL }}
+          NEXT_PUBLIC_BASE_PATH: ${{ env.BASE_PATH }}
           NEXT_PUBLIC_GA_ID: ${{ vars.NEXT_PUBLIC_GA_ID }}
           NEXT_PUBLIC_GSC_VERIFICATION: ${{ vars.NEXT_PUBLIC_GSC_VERIFICATION }}
           NEXT_PUBLIC_TWITTER_HANDLE: ${{ vars.NEXT_PUBLIC_TWITTER_HANDLE }}
