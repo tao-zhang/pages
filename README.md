@@ -88,8 +88,10 @@ works — Vercel, Netlify, Cloudflare Pages, GitHub Pages, S3+CloudFront.
 
 Deploy-on-publish is already wired up (`.github/workflows/deploy.yml`),
 defaulted to **GitHub Pages** since it needs no new third-party account —
-just a GitHub repo and Pages enabled. **Not active yet** — see open items
-below. Swapping to Vercel/Netlify later (e.g. for per-PR preview URLs, which
+just a GitHub repo and Pages enabled. Pushed to
+[tao-zhang/pages](https://github.com/tao-zhang/pages); site will be live at
+`https://tao-zhang.github.io/pages/` once Pages is enabled (see open items
+below). Swapping to Vercel/Netlify later (e.g. for per-PR preview URLs, which
 would make the review step above stronger) is a small change to that one
 workflow file, not a rearchitecture.
 
@@ -102,12 +104,10 @@ npx serve out
 
 ## Open items / needs from the CEO
 
-- **A GitHub remote for this repo**: nothing has been pushed anywhere yet
-  (this has only existed as a local working tree). Needed before any CI/CD
-  can actually run.
-- **Enable GitHub Pages** on that repo — Settings → Pages → Source:
-  "GitHub Actions". That's the only manual step to make `deploy.yml` start
-  publishing on every merge to `main`.
+- **Enable GitHub Pages** on the repo — Settings → Pages → Source:
+  "GitHub Actions". That's the only manual step left to make `deploy.yml`
+  start publishing on every merge to `main`; this agent has no repo-admin
+  access to flip it.
 - **Hosting account** (only if GitHub Pages isn't the final answer): Vercel
   is the path of least friction for Next.js and adds PR preview deploys —
   flagging as an upgrade option, not required to ship.
